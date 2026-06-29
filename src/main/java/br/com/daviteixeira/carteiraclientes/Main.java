@@ -1,8 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package br.com.daviteixeira.carteiraclientes;
+
+import br.com.daviteixeira.carteiraclientes.view.LoginView;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -11,6 +10,11 @@ package br.com.daviteixeira.carteiraclientes;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Carteira de clientes");
+        SwingUtilities.invokeLater(() -> {
+            LoginView loginView = new LoginView();
+            loginView.setVisible(true);
+        });
     }
 }
+
+
