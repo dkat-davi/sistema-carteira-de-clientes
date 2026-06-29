@@ -10,12 +10,17 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class UsuarioLojaView extends javax.swing.JFrame {
+public class UsuarioLojaView extends javax.swing.JDialog {
 
     private final UsuarioLojaController usuarioLojaController = new UsuarioLojaController();
     private Runnable onClose;
 
     public UsuarioLojaView() {
+        this(null);
+    }
+
+    public UsuarioLojaView(java.awt.Frame parent) {
+        super(parent, false);
         initComponents();
         configurarTela();
     }

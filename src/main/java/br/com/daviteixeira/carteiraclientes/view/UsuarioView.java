@@ -7,12 +7,17 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class UsuarioView extends javax.swing.JFrame {
+public class UsuarioView extends javax.swing.JDialog {
 
     private final UsuarioController usuarioController = new UsuarioController();
     private Runnable onClose;
 
     public UsuarioView() {
+        this(null);
+    }
+
+    public UsuarioView(java.awt.Frame parent) {
+        super(parent, false);
         initComponents();
         configurarTela();
     }

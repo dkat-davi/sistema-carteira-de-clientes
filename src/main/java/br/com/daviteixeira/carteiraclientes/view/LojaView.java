@@ -7,12 +7,17 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class LojaView extends javax.swing.JFrame {
+public class LojaView extends javax.swing.JDialog {
 
     private final LojaController lojaController;
     private Runnable onClose;
 
     public LojaView() {
+        this(null);
+    }
+
+    public LojaView(java.awt.Frame parent) {
+        super(parent, false);
         this.lojaController = new LojaController();
 
         initComponents();

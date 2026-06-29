@@ -12,13 +12,18 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class ClienteView extends javax.swing.JFrame {
+public class ClienteView extends javax.swing.JDialog {
 
     private final ClienteController clienteController = new ClienteController();
     private final DateTimeFormatter formatadorData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private Runnable onClose;
 
     public ClienteView() {
+        this(null);
+    }
+
+    public ClienteView(java.awt.Frame parent) {
+        super(parent, false);
         initComponents();
         configurarTela();
     }

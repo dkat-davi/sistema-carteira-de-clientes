@@ -3,9 +3,9 @@ package br.com.daviteixeira.carteiraclientes.view;
 import br.com.daviteixeira.carteiraclientes.controller.RelatorioController;
 import br.com.daviteixeira.carteiraclientes.model.Usuario;
 import br.com.daviteixeira.carteiraclientes.util.SessaoUsuario;
-import java.awt.BorderLayout;
+import java.awt.Window;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import net.sf.jasperreports.engine.JasperPrint;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +15,15 @@ import java.time.format.DateTimeParseException;
 public class TelaPrincipalView extends javax.swing.JFrame {
 
     private final RelatorioController relatorioController = new RelatorioController();
+    private ClienteView clienteView;
+    private UsuarioView usuarioView;
+    private LojaView lojaView;
+    private UsuarioLojaView usuarioLojaView;
+    private AtendimentoView atendimentoView;
+    private JDialog relatorioClientesPorLojaView;
+    private JDialog relatorioClientesPorVendedorView;
+    private JDialog relatorioAtendimentosPorPeriodoView;
+    private JDialog relatorioUsuariosPorLojaView;
 
     public TelaPrincipalView() {
         initComponents();
@@ -22,7 +31,6 @@ public class TelaPrincipalView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         configurarUsuarioLogado();
         configurarPermissoes();
-        mostrarTelaInicial();
     }
 
     private void configurarUsuarioLogado() {
@@ -56,26 +64,6 @@ public class TelaPrincipalView extends javax.swing.JFrame {
         );
     }
 
-    private void mostrarTelaInicial() {
-        setTitle("Sistema Carteira de Clientes");
-
-        painelPrincipal.removeAll();
-        painelPrincipal.setLayout(new BorderLayout());
-        painelPrincipal.add(lblBoasVindas, BorderLayout.CENTER);
-        painelPrincipal.revalidate();
-        painelPrincipal.repaint();
-    }
-
-    private void abrirTela(String titulo, JPanel tela) {
-        setTitle("Sistema Carteira de Clientes - " + titulo);
-
-        painelPrincipal.removeAll();
-        painelPrincipal.setLayout(new BorderLayout());
-        painelPrincipal.add(tela, BorderLayout.CENTER);
-        painelPrincipal.revalidate();
-        painelPrincipal.repaint();
-    }
-
     private void sairDoSistema() {
         int opcao = JOptionPane.showConfirmDialog(
                 this,
@@ -92,6 +80,24 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
             dispose();
         }
+    }
+
+    private void exibirJanela(Window janela) {
+        if (!janela.isVisible()) {
+            janela.setLocationRelativeTo(this);
+            janela.setVisible(true);
+        }
+
+        janela.toFront();
+        janela.requestFocus();
+    }
+
+    private JDialog criarJanelaRelatorio(String titulo, JasperPrint jasperPrint) {
+        JDialog janela = new JDialog(this, titulo, false);
+        janela.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        janela.setContentPane(new RelatorioViewerView(titulo, jasperPrint));
+        janela.pack();
+        return janela;
     }
 
     @SuppressWarnings("unchecked")
@@ -254,70 +260,53 @@ public class TelaPrincipalView extends javax.swing.JFrame {
     }
 
     private void itemClientesActionPerformed(java.awt.event.ActionEvent evt) {
-        ClienteView clienteView = new ClienteView();
-        clienteView.setOnClose(this::mostrarTelaInicial);
+        if (clienteView == null || !clienteView.isDisplayable()) {
+            clienteView = new ClienteView(this);
+        }
 
-        abrirTela(
-                "Cadastro de Clientes",
-                clienteView.getPainelPrincipal()
-        );
+        exibirJanela(clienteView);
     }
 
     private void itemUsuariosActionPerformed(java.awt.event.ActionEvent evt) {
-        UsuarioView usuarioView = new UsuarioView();
-        usuarioView.setOnClose(this::mostrarTelaInicial);
+        if (usuarioView == null || !usuarioView.isDisplayable()) {
+            usuarioView = new UsuarioView(this);
+        }
 
-        abrirTela(
-                "Cadastro de Usuários",
-                usuarioView.getPainelPrincipal()
-        );
+        exibirJanela(usuarioView);
     }
 
     private void itemLojasActionPerformed(java.awt.event.ActionEvent evt) {
-        LojaView lojaView = new LojaView();
-        lojaView.setOnClose(this::mostrarTelaInicial);
+        if (lojaView == null || !lojaView.isDisplayable()) {
+            lojaView = new LojaView(this);
+        }
 
-        abrirTela(
-                "Cadastro de Lojas",
-                lojaView.getPainelPrincipal()
-        );
+        exibirJanela(lojaView);
     }
 
     private void itemUsuarioLojaActionPerformed(java.awt.event.ActionEvent evt) {
-        UsuarioLojaView usuarioLojaView = new UsuarioLojaView();
-        usuarioLojaView.setOnClose(this::mostrarTelaInicial);
+        if (usuarioLojaView == null || !usuarioLojaView.isDisplayable()) {
+            usuarioLojaView = new UsuarioLojaView(this);
+        }
 
-        abrirTela(
-                "Vínculo Usuário x Loja",
-                usuarioLojaView.getPainelPrincipal()
-        );
+        exibirJanela(usuarioLojaView);
     }
 
     private void itemRegistrarAtendimentoActionPerformed(java.awt.event.ActionEvent evt) {
-        AtendimentoView atendimentoView = new AtendimentoView();
-        atendimentoView.setOnClose(this::mostrarTelaInicial);
+        if (atendimentoView == null || !atendimentoView.isDisplayable()) {
+            atendimentoView = new AtendimentoView(this);
+        }
 
-        abrirTela(
-                "Registro de Atendimentos",
-                atendimentoView.getPainelPrincipal()
-        );
+        exibirJanela(atendimentoView);
     }
 
     private void itemClientesPorLojaActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            JasperPrint jasperPrint = relatorioController.gerarClientesPorLoja();
+            if (relatorioClientesPorLojaView == null || !relatorioClientesPorLojaView.isDisplayable()) {
+                JasperPrint jasperPrint = relatorioController.gerarClientesPorLoja();
+                relatorioClientesPorLojaView = criarJanelaRelatorio("Relatório - Clientes por Loja", jasperPrint);
+            }
 
-            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
-                    "Relatório - Clientes por Loja",
-                    jasperPrint
-            );
-
-            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
-
-            abrirTela(
-                    "Relatório - Clientes por Loja",
-                    relatorioViewerView
-            );
+            exibirJanela(relatorioClientesPorLojaView);
 
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(
@@ -331,19 +320,12 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void itemClientesPorVendedorActionPerformed(java.awt.event.ActionEvent evt) {
          try {
-            JasperPrint jasperPrint = relatorioController.gerarClientesPorVendedor();
+            if (relatorioClientesPorVendedorView == null || !relatorioClientesPorVendedorView.isDisplayable()) {
+                JasperPrint jasperPrint = relatorioController.gerarClientesPorVendedor();
+                relatorioClientesPorVendedorView = criarJanelaRelatorio("Relatório - Clientes por Vendedor", jasperPrint);
+            }
 
-            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
-                "Relatório - Clientes por Vendedor",
-                jasperPrint
-            );
-
-            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
-
-            abrirTela(
-                "Relatório - Clientes por Vendedor",
-                relatorioViewerView
-            );
+            exibirJanela(relatorioClientesPorVendedorView);
 
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(
@@ -357,6 +339,11 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void itemAtendimentosPorPeriodoActionPerformed(java.awt.event.ActionEvent evt) {
         try {
+            if (relatorioAtendimentosPorPeriodoView != null && relatorioAtendimentosPorPeriodoView.isDisplayable()) {
+                exibirJanela(relatorioAtendimentosPorPeriodoView);
+                return;
+            }
+
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");    
 
             String dataInicioTexto = JOptionPane.showInputDialog(
@@ -392,17 +379,12 @@ public class TelaPrincipalView extends javax.swing.JFrame {
                 dataFimCompleta
             );
 
-            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
-                "Relatório - Atendimentos por Período",
-                jasperPrint
-            );
-
-            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
-
-            abrirTela(
+            relatorioAtendimentosPorPeriodoView = criarJanelaRelatorio(
                     "Relatório - Atendimentos por Período",
-                    relatorioViewerView
+                    jasperPrint
             );
+
+            exibirJanela(relatorioAtendimentosPorPeriodoView);
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(
@@ -424,19 +406,12 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void itemUsuariosPorLojaActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            JasperPrint jasperPrint = relatorioController.gerarUsuariosPorLoja();
+            if (relatorioUsuariosPorLojaView == null || !relatorioUsuariosPorLojaView.isDisplayable()) {
+                JasperPrint jasperPrint = relatorioController.gerarUsuariosPorLoja();
+                relatorioUsuariosPorLojaView = criarJanelaRelatorio("Relatório - Usuários por Loja", jasperPrint);
+            }
 
-            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
-                "Relatório - Usuários por Loja",
-                jasperPrint
-            );
-
-            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
-
-            abrirTela(
-                "Relatório - Usuários por Loja",
-                relatorioViewerView
-            );
+            exibirJanela(relatorioUsuariosPorLojaView);
 
         } catch (RuntimeException e) {
             JOptionPane.showMessageDialog(

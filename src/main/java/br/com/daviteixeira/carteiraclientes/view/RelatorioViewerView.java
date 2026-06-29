@@ -1,6 +1,8 @@
 package br.com.daviteixeira.carteiraclientes.view;
 
 import java.awt.BorderLayout;
+import java.awt.Window;
+import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.swing.JRViewer;
 
@@ -102,6 +104,12 @@ public class RelatorioViewerView extends javax.swing.JPanel {
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
         if (onClose != null) {
             onClose.run();
+            return;
+        }
+
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if (window != null) {
+            window.dispose();
         }
     }
 

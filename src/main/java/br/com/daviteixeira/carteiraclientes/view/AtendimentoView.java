@@ -10,13 +10,18 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class AtendimentoView extends javax.swing.JFrame {
+public class AtendimentoView extends javax.swing.JDialog {
 
     private final AtendimentoController atendimentoController = new AtendimentoController();
     private final DateTimeFormatter formatadorData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private Runnable onClose;
 
     public AtendimentoView() {
+        this(null);
+    }
+
+    public AtendimentoView(java.awt.Frame parent) {
+        super(parent, false);
         initComponents();
         configurarTela();
     }
