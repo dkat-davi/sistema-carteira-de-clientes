@@ -20,7 +20,7 @@ public class UsuarioLojaView extends javax.swing.JDialog {
     }
 
     public UsuarioLojaView(java.awt.Frame parent) {
-        super(parent, false);
+        super(parent, true);
         initComponents();
         configurarTela();
     }

@@ -3,6 +3,8 @@ package br.com.daviteixeira.carteiraclientes.view;
 import br.com.daviteixeira.carteiraclientes.controller.RelatorioController;
 import br.com.daviteixeira.carteiraclientes.model.Usuario;
 import br.com.daviteixeira.carteiraclientes.util.SessaoUsuario;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.Window;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -13,6 +15,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class TelaPrincipalView extends javax.swing.JFrame {
+
+    private static final String MAXIMIZAR_AO_ABRIR = "maximizarAoAbrir";
 
     private final RelatorioController relatorioController = new RelatorioController();
     private ClienteView clienteView;
@@ -29,6 +33,7 @@ public class TelaPrincipalView extends javax.swing.JFrame {
         initComponents();
 
         setLocationRelativeTo(null);
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
         configurarUsuarioLogado();
         configurarPermissoes();
     }
@@ -85,6 +90,11 @@ public class TelaPrincipalView extends javax.swing.JFrame {
     private void exibirJanela(Window janela) {
         if (!janela.isVisible()) {
             janela.setLocationRelativeTo(this);
+
+            if (deveMaximizarAoAbrir(janela)) {
+                maximizarJanela(janela);
+            }
+
             janela.setVisible(true);
         }
 
@@ -95,9 +105,28 @@ public class TelaPrincipalView extends javax.swing.JFrame {
     private JDialog criarJanelaRelatorio(String titulo, JasperPrint jasperPrint) {
         JDialog janela = new JDialog(this, titulo, false);
         janela.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        janela.getRootPane().putClientProperty(MAXIMIZAR_AO_ABRIR, Boolean.TRUE);
         janela.setContentPane(new RelatorioViewerView(titulo, jasperPrint));
         janela.pack();
+        maximizarJanela(janela);
         return janela;
+    }
+
+    private boolean deveMaximizarAoAbrir(Window janela) {
+        if (!(janela instanceof JDialog)) {
+            return false;
+        }
+
+        Object maximizar = ((JDialog) janela).getRootPane().getClientProperty(MAXIMIZAR_AO_ABRIR);
+        return Boolean.TRUE.equals(maximizar);
+    }
+
+    private void maximizarJanela(Window janela) {
+        Rectangle areaUtil = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getMaximumWindowBounds();
+
+        janela.setBounds(areaUtil);
     }
 
     @SuppressWarnings("unchecked")

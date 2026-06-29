@@ -2,6 +2,7 @@ package br.com.daviteixeira.carteiraclientes.controller;
 
 import br.com.daviteixeira.carteiraclientes.dao.AtendimentoDAO;
 import br.com.daviteixeira.carteiraclientes.dao.ClienteDAO;
+import br.com.daviteixeira.carteiraclientes.dao.UsuarioLojaDAO;
 import br.com.daviteixeira.carteiraclientes.model.Atendimento;
 import br.com.daviteixeira.carteiraclientes.model.Cliente;
 import br.com.daviteixeira.carteiraclientes.model.Usuario;
@@ -13,10 +14,12 @@ public class AtendimentoController {
 
     private final AtendimentoDAO atendimentoDAO;
     private final ClienteDAO clienteDAO;
+    private final UsuarioLojaDAO usuarioLojaDAO;
 
     public AtendimentoController() {
         this.atendimentoDAO = new AtendimentoDAO();
         this.clienteDAO = new ClienteDAO();
+        this.usuarioLojaDAO = new UsuarioLojaDAO();
     }
 
     public void salvar(Atendimento atendimento) {
@@ -69,7 +72,7 @@ public class AtendimentoController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        return atendimentoDAO.listarPorVendedor(usuarioLogado.getId());
+        return atendimentoDAO.listarPorUsuarioComGerencia(usuarioLogado.getId());
     }
 
     public List<Atendimento> pesquisar(String termo) {
@@ -83,7 +86,7 @@ public class AtendimentoController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        return atendimentoDAO.pesquisarPorVendedor(termo.trim(), usuarioLogado.getId());
+        return atendimentoDAO.pesquisarPorUsuarioComGerencia(termo.trim(), usuarioLogado.getId());
     }
 
     public List<Cliente> listarClientesDisponiveis() {
@@ -93,7 +96,7 @@ public class AtendimentoController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        return clienteDAO.listarPorVendedor(usuarioLogado.getId());
+        return clienteDAO.listarPorUsuarioComGerencia(usuarioLogado.getId());
     }
 
     private void validar(Atendimento atendimento) {
@@ -123,7 +126,10 @@ public class AtendimentoController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        if (cliente.getVendedorId() != usuarioLogado.getId()) {
+        boolean vendedorDoCliente = cliente.getVendedorId() == usuarioLogado.getId();
+        boolean gerenteDaLoja = usuarioLojaDAO.isGerenteDaLoja(usuarioLogado.getId(), cliente.getLojaId());
+
+        if (!vendedorDoCliente && !gerenteDaLoja) {
             throw new IllegalArgumentException("Você não possui permissão para registrar atendimento para este cliente.");
         }
     }
@@ -149,7 +155,10 @@ public class AtendimentoController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        if (cliente.getVendedorId() != usuarioLogado.getId()) {
+        boolean vendedorDoCliente = cliente.getVendedorId() == usuarioLogado.getId();
+        boolean gerenteDaLoja = usuarioLojaDAO.isGerenteDaLoja(usuarioLogado.getId(), cliente.getLojaId());
+
+        if (!vendedorDoCliente && !gerenteDaLoja) {
             throw new IllegalArgumentException("Você não possui permissão para acessar este atendimento.");
         }
     }

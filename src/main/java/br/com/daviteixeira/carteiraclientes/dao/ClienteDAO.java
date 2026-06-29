@@ -201,6 +201,42 @@ public class ClienteDAO {
         }
     }
 
+    public List<Cliente> listarPorUsuarioComGerencia(int usuarioId) {
+        String sql = SELECT_CLIENTE + """
+            WHERE c.vendedor_id = ?
+            OR c.loja_id IN (
+                SELECT ul.loja_id
+                FROM usuario_loja ul
+                WHERE ul.usuario_id = ?
+                AND ul.cargo = 'GERENTE'
+            )
+            ORDER BY c.nome
+        """;
+
+        List<Cliente> clientes = new ArrayList<>();
+
+        try {
+            Connection con = ConnectionFactory.getInstance().getConnection();
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        clientes.add(preencherCliente(rs));
+                    }
+                }
+            }
+
+            return clientes;
+
+        } catch (Exception e) {
+            System.out.println("Erro ao listar clientes por usuario com gerencia: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar clientes por usuario com gerencia.", e);
+        }
+    }
+
     public List<Cliente> pesquisarTodos(String termo) {
         String sql = SELECT_CLIENTE + """
             WHERE c.nome LIKE ?
@@ -280,6 +316,58 @@ public class ClienteDAO {
         } catch (Exception e) {
             System.out.println("Erro ao pesquisar clientes por vendedor: " + e.getMessage());
             throw new RuntimeException("Erro ao pesquisar clientes por vendedor.", e);
+        }
+    }
+
+    public List<Cliente> pesquisarPorUsuarioComGerencia(String termo, int usuarioId) {
+        String sql = SELECT_CLIENTE + """
+            WHERE (
+                c.vendedor_id = ?
+                OR c.loja_id IN (
+                    SELECT ul.loja_id
+                    FROM usuario_loja ul
+                    WHERE ul.usuario_id = ?
+                    AND ul.cargo = 'GERENTE'
+                )
+            )
+            AND (
+                c.nome LIKE ?
+                OR c.cpf LIKE ?
+                OR c.telefone LIKE ?
+                OR l.nome LIKE ?
+                OR u.nome LIKE ?
+            )
+            ORDER BY c.nome
+        """;
+
+        List<Cliente> clientes = new ArrayList<>();
+
+        try {
+            Connection con = ConnectionFactory.getInstance().getConnection();
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                String filtro = "%" + termo + "%";
+
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+                stmt.setString(3, filtro);
+                stmt.setString(4, filtro);
+                stmt.setString(5, filtro);
+                stmt.setString(6, filtro);
+                stmt.setString(7, filtro);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        clientes.add(preencherCliente(rs));
+                    }
+                }
+            }
+
+            return clientes;
+
+        } catch (Exception e) {
+            System.out.println("Erro ao pesquisar clientes por usuario com gerencia: " + e.getMessage());
+            throw new RuntimeException("Erro ao pesquisar clientes por usuario com gerencia.", e);
         }
     }
 

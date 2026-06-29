@@ -20,9 +20,11 @@ public class AtendimentoDAO {
             a.data_atendimento,
             a.descricao,
             c.nome AS cliente_nome,
+            l.nome AS loja_nome,
             u.nome AS usuario_nome
         FROM atendimento a
         INNER JOIN cliente c ON c.id = a.cliente_id
+        INNER JOIN loja l ON l.id = c.loja_id
         INNER JOIN usuario u ON u.id = a.usuario_id
     """;
 
@@ -179,6 +181,42 @@ public class AtendimentoDAO {
         }
     }
 
+    public List<Atendimento> listarPorUsuarioComGerencia(int usuarioId) {
+        String sql = SELECT_ATENDIMENTO + """
+            WHERE c.vendedor_id = ?
+            OR c.loja_id IN (
+                SELECT ul.loja_id
+                FROM usuario_loja ul
+                WHERE ul.usuario_id = ?
+                AND ul.cargo = 'GERENTE'
+            )
+            ORDER BY a.data_atendimento DESC
+        """;
+
+        List<Atendimento> atendimentos = new ArrayList<>();
+
+        try {
+            Connection con = ConnectionFactory.getInstance().getConnection();
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        atendimentos.add(preencherAtendimento(rs));
+                    }
+                }
+            }
+
+            return atendimentos;
+
+        } catch (Exception e) {
+            System.out.println("Erro ao listar atendimentos por usuario com gerencia: " + e.getMessage());
+            throw new RuntimeException("Erro ao listar atendimentos por usuario com gerencia.", e);
+        }
+    }
+
     public List<Atendimento> pesquisarTodos(String termo) {
         String sql = SELECT_ATENDIMENTO + """
             WHERE c.nome LIKE ?
@@ -253,6 +291,54 @@ public class AtendimentoDAO {
         }
     }
 
+    public List<Atendimento> pesquisarPorUsuarioComGerencia(String termo, int usuarioId) {
+        String sql = SELECT_ATENDIMENTO + """
+            WHERE (
+                c.vendedor_id = ?
+                OR c.loja_id IN (
+                    SELECT ul.loja_id
+                    FROM usuario_loja ul
+                    WHERE ul.usuario_id = ?
+                    AND ul.cargo = 'GERENTE'
+                )
+            )
+            AND (
+                c.nome LIKE ?
+                OR u.nome LIKE ?
+                OR a.descricao LIKE ?
+            )
+            ORDER BY a.data_atendimento DESC
+        """;
+
+        List<Atendimento> atendimentos = new ArrayList<>();
+
+        try {
+            Connection con = ConnectionFactory.getInstance().getConnection();
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                String filtro = "%" + termo + "%";
+
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, usuarioId);
+                stmt.setString(3, filtro);
+                stmt.setString(4, filtro);
+                stmt.setString(5, filtro);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        atendimentos.add(preencherAtendimento(rs));
+                    }
+                }
+            }
+
+            return atendimentos;
+
+        } catch (Exception e) {
+            System.out.println("Erro ao pesquisar atendimentos por usuario com gerencia: " + e.getMessage());
+            throw new RuntimeException("Erro ao pesquisar atendimentos por usuario com gerencia.", e);
+        }
+    }
+
     private Atendimento preencherAtendimento(ResultSet rs) throws Exception {
         Atendimento atendimento = new Atendimento();
 
@@ -261,6 +347,7 @@ public class AtendimentoDAO {
         atendimento.setUsuarioId(rs.getInt("usuario_id"));
         atendimento.setDescricao(rs.getString("descricao"));
         atendimento.setClienteNome(rs.getString("cliente_nome"));
+        atendimento.setLojaNome(rs.getString("loja_nome"));
         atendimento.setUsuarioNome(rs.getString("usuario_nome"));
 
         Timestamp dataAtendimento = rs.getTimestamp("data_atendimento");

@@ -32,7 +32,7 @@ public class ClienteController {
         cliente.setEmail(normalizarTexto(cliente.getEmail()));
         cliente.setEndereco(normalizarTexto(cliente.getEndereco()));
 
-        if (!SessaoUsuario.isAdmin()) {
+        if (!SessaoUsuario.isAdmin() && cliente.getId() == 0) {
             Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
             cliente.setVendedorId(usuarioLogado.getId());
         }
@@ -41,6 +41,7 @@ public class ClienteController {
             clienteDAO.salvar(cliente);
         } else {
             validarPermissaoCliente(cliente.getId());
+            preservarVendedorAtualParaUsuarioComum(cliente);
             clienteDAO.atualizar(cliente);
         }
     }
@@ -78,7 +79,7 @@ public class ClienteController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        return clienteDAO.listarPorVendedor(usuarioLogado.getId());
+        return clienteDAO.listarPorUsuarioComGerencia(usuarioLogado.getId());
     }
 
     public List<Cliente> pesquisar(String termo) {
@@ -92,7 +93,7 @@ public class ClienteController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        return clienteDAO.pesquisarPorVendedor(termo.trim(), usuarioLogado.getId());
+        return clienteDAO.pesquisarPorUsuarioComGerencia(termo.trim(), usuarioLogado.getId());
     }
 
     public List<Loja> listarLojasDisponiveis() {
@@ -160,8 +161,23 @@ public class ClienteController {
 
         Usuario usuarioLogado = SessaoUsuario.getUsuarioLogado();
 
-        if (cliente.getVendedorId() != usuarioLogado.getId()) {
+        boolean vendedorDoCliente = cliente.getVendedorId() == usuarioLogado.getId();
+        boolean gerenteDaLoja = usuarioLojaDAO.isGerenteDaLoja(usuarioLogado.getId(), cliente.getLojaId());
+
+        if (!vendedorDoCliente && !gerenteDaLoja) {
             throw new IllegalArgumentException("Você não possui permissão para acessar este cliente.");
+        }
+    }
+
+    private void preservarVendedorAtualParaUsuarioComum(Cliente cliente) {
+        if (SessaoUsuario.isAdmin()) {
+            return;
+        }
+
+        Cliente clienteAtual = clienteDAO.buscarPorId(cliente.getId());
+
+        if (clienteAtual != null) {
+            cliente.setVendedorId(clienteAtual.getVendedorId());
         }
     }
 

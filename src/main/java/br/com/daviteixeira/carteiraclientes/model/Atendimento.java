@@ -12,6 +12,7 @@ public class Atendimento {
 
     private String clienteNome;
     private String usuarioNome;
+    private String lojaNome;
 
     public Atendimento() {
     }
@@ -78,5 +79,13 @@ public class Atendimento {
 
     public void setUsuarioNome(String usuarioNome) {
         this.usuarioNome = usuarioNome;
+    }
+
+    public String getLojaNome() {
+        return lojaNome;
+    }
+
+    public void setLojaNome(String lojaNome) {
+        this.lojaNome = lojaNome;
     }
 }

@@ -51,7 +51,7 @@
 			<text><![CDATA[Cliente]]></text>
 		</element>
 		<element kind="staticText" uuid="3ea5d188-8d29-4c10-a021-05c19c76aac5" x="290" y="5" width="160" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
-			<text><![CDATA[Usuário]]></text>
+			<text><![CDATA[Atendente]]></text>
 		</element>
 		<element kind="staticText" uuid="29a179f9-e6db-45bd-a724-7e539769d8d9" x="450" y="5" width="130" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
 			<text><![CDATA[Loja]]></text>

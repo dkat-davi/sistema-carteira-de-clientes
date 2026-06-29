@@ -14,6 +14,7 @@ public class AtendimentoView extends javax.swing.JDialog {
 
     private final AtendimentoController atendimentoController = new AtendimentoController();
     private final DateTimeFormatter formatadorData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private int atendimentoSelecionadoId;
     private Runnable onClose;
 
     public AtendimentoView() {
@@ -38,6 +39,7 @@ public class AtendimentoView extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         txtId.setEditable(false);
 
+        comboCliente.addActionListener(evt -> atualizarIdClienteSelecionado());
         carregarComboClientes();
         carregarTabela();
     }
@@ -52,6 +54,18 @@ public class AtendimentoView extends javax.swing.JDialog {
         }
 
         comboCliente.setModel(modelo);
+        atualizarIdClienteSelecionado();
+    }
+
+    private void atualizarIdClienteSelecionado() {
+        Cliente clienteSelecionado = (Cliente) comboCliente.getSelectedItem();
+
+        if (clienteSelecionado == null) {
+            txtId.setText("");
+            return;
+        }
+
+        txtId.setText(String.valueOf(clienteSelecionado.getId()));
     }
 
     private void salvarAtendimento() {
@@ -60,7 +74,7 @@ public class AtendimentoView extends javax.swing.JDialog {
 
             Atendimento atendimento = new Atendimento();
 
-            atendimento.setId(obterIdSelecionado());
+            atendimento.setId(atendimentoSelecionadoId);
 
             if (clienteSelecionado != null) {
                 atendimento.setClienteId(clienteSelecionado.getId());
@@ -100,7 +114,7 @@ public class AtendimentoView extends javax.swing.JDialog {
 
     private void excluirAtendimento() {
         try {
-            int id = obterIdSelecionado();
+            int id = atendimentoSelecionadoId;
 
             if (id <= 0) {
                 JOptionPane.showMessageDialog(
@@ -180,6 +194,7 @@ public class AtendimentoView extends javax.swing.JDialog {
             modelo.addRow(new Object[]{
                 atendimento.getId(),
                 atendimento.getClienteNome(),
+                atendimento.getLojaNome(),
                 atendimento.getUsuarioNome(),
                 formatarData(atendimento),
                 atendimento.getDescricao()
@@ -210,8 +225,9 @@ public class AtendimentoView extends javax.swing.JDialog {
             return;
         }
 
-        txtId.setText(String.valueOf(atendimento.getId()));
+        atendimentoSelecionadoId = atendimento.getId();
         selecionarClienteCombo(atendimento.getClienteId());
+        atualizarIdClienteSelecionado();
         txtDescricao.setText(atendimento.getDescricao());
     }
 
@@ -226,21 +242,15 @@ public class AtendimentoView extends javax.swing.JDialog {
         }
     }
 
-    private int obterIdSelecionado() {
-        if (txtId.getText() == null || txtId.getText().trim().isEmpty()) {
-            return 0;
-        }
-
-        return Integer.parseInt(txtId.getText());
-    }
-
     private void limparCampos() {
+        atendimentoSelecionadoId = 0;
         txtId.setText("");
         txtDescricao.setText("");
         txtPesquisa.setText("");
 
         if (comboCliente.getItemCount() > 0) {
             comboCliente.setSelectedIndex(0);
+            atualizarIdClienteSelecionado();
         }
 
         tabelaAtendimentos.clearSelection();
@@ -337,11 +347,11 @@ public class AtendimentoView extends javax.swing.JDialog {
 
                 },
                 new String [] {
-                    "ID", "Cliente", "Usuário", "Data", "Descrição"
+                    "ID", "Cliente", "Loja", "Usuário", "Data", "Descrição"
                 }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

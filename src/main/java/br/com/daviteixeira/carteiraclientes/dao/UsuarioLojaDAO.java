@@ -242,6 +242,37 @@ public class UsuarioLojaDAO {
         }
     }
 
+    public boolean isGerenteDaLoja(int usuarioId, int lojaId) {
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM usuario_loja
+            WHERE usuario_id = ?
+            AND loja_id = ?
+            AND cargo = 'GERENTE'
+        """;
+
+        try {
+            Connection con = ConnectionFactory.getInstance().getConnection();
+
+            try (PreparedStatement stmt = con.prepareStatement(sql)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setInt(2, lojaId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("total") > 0;
+                    }
+                }
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            System.out.println("Erro ao verificar gerente da loja: " + e.getMessage());
+            throw new RuntimeException("Erro ao verificar gerente da loja.", e);
+        }
+    }
+
     private UsuarioLoja preencherUsuarioLoja(ResultSet rs) throws Exception {
         UsuarioLoja usuarioLoja = new UsuarioLoja();
 
@@ -269,7 +300,6 @@ public class UsuarioLojaDAO {
         INNER JOIN usuario u ON u.id = ul.usuario_id
         INNER JOIN loja l ON l.id = ul.loja_id
         WHERE ul.loja_id = ?
-        AND ul.cargo = 'VENDEDOR'
         AND u.ativo = TRUE
         AND l.ativo = TRUE
         ORDER BY u.nome
