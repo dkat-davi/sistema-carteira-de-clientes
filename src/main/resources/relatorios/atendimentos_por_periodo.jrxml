@@ -1,0 +1,95 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="atendimentos_por_periodo" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e820fcaa-4e0c-4279-b6cc-55ea476c4c38">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL - Carteira Clientes"/>
+	<parameter name="DATA_INICIO" class="java.sql.Timestamp"/>
+	<parameter name="DATA_FIM" class="java.sql.Timestamp"/>
+	<query language="SQL"><![CDATA[
+        
+            SELECT
+                DATE_FORMAT(a.data_atendimento, '%d/%m/%Y %H:%i') AS data_atendimento_formatada,
+                c.nome AS cliente_nome,
+                u.nome AS usuario_nome,
+                l.nome AS loja_nome,
+                a.descricao AS descricao
+            FROM atendimento a
+            INNER JOIN cliente c ON c.id = a.cliente_id
+            INNER JOIN usuario u ON u.id = a.usuario_id
+            INNER JOIN loja l ON l.id = c.loja_id
+            WHERE a.data_atendimento BETWEEN $P{DATA_INICIO} AND $P{DATA_FIM}
+            ORDER BY a.data_atendimento DESC
+        
+    ]]></query>
+	<field name="data_atendimento_formatada" class="java.lang.String"/>
+	<field name="cliente_nome" class="java.lang.String"/>
+	<field name="usuario_nome" class="java.lang.String"/>
+	<field name="loja_nome" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<title height="80" splitType="Stretch">
+		<element kind="staticText" uuid="f99fc6a3-85c8-44b4-92f5-127a9155959a" x="0" y="5" width="802" height="30" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Relatório de Atendimentos por Período]]></text>
+		</element>
+		<element kind="textField" uuid="38026b62-b698-420d-82d2-f1f69505f49d" x="0" y="42" width="802" height="18" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<expression><![CDATA[
+                "Período: "
+                + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{DATA_INICIO})
+                + " até "
+                + new java.text.SimpleDateFormat("dd/MM/yyyy").format($P{DATA_FIM})
+            ]]></expression>
+		</element>
+	</title>
+	<pageHeader height="20" splitType="Stretch">
+		<element kind="textField" uuid="8a3c2bd5-1eb9-4c9c-a5aa-7f13f3a5d08d" x="600" y="0" width="202" height="16" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Emitido em: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="1f07e2ad-1446-41fb-8f13-227d1a893f49" x="0" y="5" width="110" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Data]]></text>
+		</element>
+		<element kind="staticText" uuid="acb23925-0c32-4d93-bad8-bde462e27515" x="110" y="5" width="180" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Cliente]]></text>
+		</element>
+		<element kind="staticText" uuid="3ea5d188-8d29-4c10-a021-05c19c76aac5" x="290" y="5" width="160" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Usuário]]></text>
+		</element>
+		<element kind="staticText" uuid="29a179f9-e6db-45bd-a724-7e539769d8d9" x="450" y="5" width="130" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Loja]]></text>
+		</element>
+		<element kind="staticText" uuid="b7f98f6c-8e71-40e3-a9d0-efdd1f958acb" x="580" y="5" width="222" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Descrição]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="34" splitType="Stretch">
+			<element kind="textField" uuid="d0e2b829-7aa0-48e5-a9d9-cb7440d47118" x="0" y="2" width="110" height="28" fontSize="8.0" vTextAlign="Top">
+				<expression><![CDATA[$F{data_atendimento_formatada}]]></expression>
+			</element>
+			<element kind="textField" uuid="41160d56-d12b-4395-b6b9-5573f9982ec5" x="110" y="2" width="180" height="28" fontSize="8.0" vTextAlign="Top">
+				<expression><![CDATA[$F{cliente_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="5a0dd4ab-85dc-41d4-8980-56314879e47a" x="290" y="2" width="160" height="28" fontSize="8.0" vTextAlign="Top">
+				<expression><![CDATA[$F{usuario_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="1ae60569-686c-4548-97bb-0c5fe71deea8" x="450" y="2" width="130" height="28" fontSize="8.0" vTextAlign="Top">
+				<expression><![CDATA[$F{loja_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="f20fc3a0-8e7d-4f15-a70a-a4d745b99095" x="580" y="2" width="222" height="28" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Top">
+				<expression><![CDATA[$F{descricao}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="30" splitType="Stretch">
+		<element kind="textField" uuid="f6cd0807-adc4-4f7a-a211-d4d9191608a3" x="0" y="5" width="250" height="18" fontSize="9.0">
+			<expression><![CDATA["Sistema Carteira de Clientes"]]></expression>
+		</element>
+		<element kind="textField" uuid="6948e431-078f-4399-bdaa-c75a7492e5d5" x="652" y="5" width="150" height="18" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Página " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="30" splitType="Stretch">
+		<element kind="staticText" uuid="ba795635-ebf7-49ee-8f15-b7feec9360ac" x="0" y="5" width="802" height="18" fontSize="9.0" hTextAlign="Center">
+			<text><![CDATA[Fim do relatório]]></text>
+		</element>
+	</summary>
+</jasperReport>

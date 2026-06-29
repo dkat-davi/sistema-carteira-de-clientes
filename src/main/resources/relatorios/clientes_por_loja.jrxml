@@ -1,0 +1,108 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="clientes_por_loja" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="06827ea2-a2ca-4799-b379-5ff002e28b0c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL - Carteira Clientes"/>
+	<query language="SQL"><![CDATA[
+        
+            SELECT
+                l.nome AS loja_nome,
+                c.nome AS cliente_nome,
+                c.cpf AS cliente_cpf,
+                c.telefone AS cliente_telefone,
+                u.nome AS vendedor_nome,
+                DATE_FORMAT(c.data_cadastro, '%d/%m/%Y') AS data_cadastro_formatada
+            FROM cliente c
+            INNER JOIN loja l ON l.id = c.loja_id
+            INNER JOIN usuario u ON u.id = c.vendedor_id
+            ORDER BY l.nome, c.nome
+        
+    ]]></query>
+	<field name="loja_nome" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="loja_nome"/>
+	</field>
+	<field name="cliente_nome" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="cliente_nome"/>
+	</field>
+	<field name="cliente_cpf" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="cliente_cpf"/>
+	</field>
+	<field name="cliente_telefone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="cliente_telefone"/>
+	</field>
+	<field name="vendedor_nome" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="vendedor_nome"/>
+	</field>
+	<field name="data_cadastro_formatada" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="data_cadastro_formatada"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="70" splitType="Stretch">
+		<element kind="staticText" uuid="9d2b6b5e-8371-4d64-bd3c-4f9cf5960b91" x="0" y="5" width="802" height="30" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Relatório de Clientes por Loja]]></text>
+		</element>
+		<element kind="staticText" uuid="89a61d17-6d89-4ab5-9e36-7d098a0c5d80" x="0" y="40" width="802" height="18" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Sistema Carteira de Clientes]]></text>
+		</element>
+	</title>
+	<pageHeader height="20" splitType="Stretch">
+		<element kind="textField" uuid="68d3cf3a-8c12-48b3-8a7c-7f10dc67e320" x="600" y="0" width="202" height="16" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Emitido em: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="3c0f88e1-f63a-4f72-a22e-0d7df7d8825e" x="0" y="5" width="140" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Loja]]></text>
+		</element>
+		<element kind="staticText" uuid="11fc9022-405b-4188-9259-3e433a887d8e" x="140" y="5" width="190" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Cliente]]></text>
+		</element>
+		<element kind="staticText" uuid="dfd2d726-7069-4a65-afc2-50a6f181d4ad" x="330" y="5" width="90" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[CPF]]></text>
+		</element>
+		<element kind="staticText" uuid="0ef22d75-909f-4785-b8e9-c81527aa1542" x="420" y="5" width="110" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Telefone]]></text>
+		</element>
+		<element kind="staticText" uuid="c810dd81-aa87-4f61-a5ca-20d07b986ef2" x="530" y="5" width="180" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Vendedor]]></text>
+		</element>
+		<element kind="staticText" uuid="de4f8ef7-95d6-4093-8992-b8038fa2c111" x="710" y="5" width="92" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Cadastro]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<element kind="textField" uuid="e2c8cc83-7be8-46d2-8f43-fba497bb1f2e" x="0" y="2" width="140" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{loja_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="9f94c672-a340-4416-a95c-ff1fa557de28" x="140" y="2" width="190" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{cliente_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="541d3d20-a508-4f55-9f79-5751d25ca033" x="330" y="2" width="90" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{cliente_cpf}]]></expression>
+			</element>
+			<element kind="textField" uuid="da6b1971-dff9-4b53-98fa-93ed8593b7bb" x="420" y="2" width="110" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{cliente_telefone}]]></expression>
+			</element>
+			<element kind="textField" uuid="9bd66d76-051f-4625-a060-2cf2b4cdf17a" x="530" y="2" width="180" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{vendedor_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="361360d6-6e33-4c2c-9f4e-b4ef9b7ca1f4" x="710" y="2" width="92" height="18" fontSize="9.0" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{data_cadastro_formatada}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="10" splitType="Stretch"/>
+	<pageFooter height="30" splitType="Stretch">
+		<element kind="textField" uuid="d6590ed6-02de-4d55-9067-e5b72935ecf1" x="0" y="5" width="250" height="18" fontSize="9.0">
+			<expression><![CDATA["Sistema Carteira de Clientes"]]></expression>
+		</element>
+		<element kind="textField" uuid="22fd61e4-e415-4c85-a8f8-ea9e5e138077" x="652" y="5" width="150" height="18" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Página " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="30" splitType="Stretch">
+		<element kind="staticText" uuid="bf2f9444-357b-4cec-81fc-70f0d15574b4" x="0" y="5" width="802" height="18" fontSize="9.0" hTextAlign="Center">
+			<text><![CDATA[Fim do relatório]]></text>
+		</element>
+	</summary>
+</jasperReport>

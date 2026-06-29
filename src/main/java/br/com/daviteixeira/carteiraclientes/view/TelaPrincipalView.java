@@ -1,12 +1,20 @@
 package br.com.daviteixeira.carteiraclientes.view;
 
+import br.com.daviteixeira.carteiraclientes.controller.RelatorioController;
 import br.com.daviteixeira.carteiraclientes.model.Usuario;
 import br.com.daviteixeira.carteiraclientes.util.SessaoUsuario;
 import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import net.sf.jasperreports.engine.JasperPrint;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class TelaPrincipalView extends javax.swing.JFrame {
+
+    private final RelatorioController relatorioController = new RelatorioController();
 
     public TelaPrincipalView() {
         initComponents();
@@ -50,6 +58,7 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void mostrarTelaInicial() {
         setTitle("Sistema Carteira de Clientes");
+
         painelPrincipal.removeAll();
         painelPrincipal.setLayout(new BorderLayout());
         painelPrincipal.add(lblBoasVindas, BorderLayout.CENTER);
@@ -59,6 +68,7 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void abrirTela(String titulo, JPanel tela) {
         setTitle("Sistema Carteira de Clientes - " + titulo);
+
         painelPrincipal.removeAll();
         painelPrincipal.setLayout(new BorderLayout());
         painelPrincipal.add(tela, BorderLayout.CENTER);
@@ -246,47 +256,196 @@ public class TelaPrincipalView extends javax.swing.JFrame {
     private void itemClientesActionPerformed(java.awt.event.ActionEvent evt) {
         ClienteView clienteView = new ClienteView();
         clienteView.setOnClose(this::mostrarTelaInicial);
-        abrirTela("Cadastro de Clientes", clienteView.getPainelPrincipal());
+
+        abrirTela(
+                "Cadastro de Clientes",
+                clienteView.getPainelPrincipal()
+        );
     }
 
     private void itemUsuariosActionPerformed(java.awt.event.ActionEvent evt) {
         UsuarioView usuarioView = new UsuarioView();
         usuarioView.setOnClose(this::mostrarTelaInicial);
-        abrirTela("Cadastro de Usuarios", usuarioView.getPainelPrincipal());
+
+        abrirTela(
+                "Cadastro de Usuários",
+                usuarioView.getPainelPrincipal()
+        );
     }
 
     private void itemLojasActionPerformed(java.awt.event.ActionEvent evt) {
         LojaView lojaView = new LojaView();
         lojaView.setOnClose(this::mostrarTelaInicial);
-        abrirTela("Cadastro de Lojas", lojaView.getPainelPrincipal());
+
+        abrirTela(
+                "Cadastro de Lojas",
+                lojaView.getPainelPrincipal()
+        );
     }
 
     private void itemUsuarioLojaActionPerformed(java.awt.event.ActionEvent evt) {
         UsuarioLojaView usuarioLojaView = new UsuarioLojaView();
         usuarioLojaView.setOnClose(this::mostrarTelaInicial);
-        abrirTela("Vinculo Usuario x Loja", usuarioLojaView.getPainelPrincipal());
+
+        abrirTela(
+                "Vínculo Usuário x Loja",
+                usuarioLojaView.getPainelPrincipal()
+        );
     }
 
     private void itemRegistrarAtendimentoActionPerformed(java.awt.event.ActionEvent evt) {
         AtendimentoView atendimentoView = new AtendimentoView();
         atendimentoView.setOnClose(this::mostrarTelaInicial);
-        abrirTela("Registro de Atendimentos", atendimentoView.getPainelPrincipal());
+
+        abrirTela(
+                "Registro de Atendimentos",
+                atendimentoView.getPainelPrincipal()
+        );
     }
 
     private void itemClientesPorLojaActionPerformed(java.awt.event.ActionEvent evt) {
-        mostrarModuloEmDesenvolvimento("Relatório de Clientes por Loja");
+        try {
+            JasperPrint jasperPrint = relatorioController.gerarClientesPorLoja();
+
+            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
+                    "Relatório - Clientes por Loja",
+                    jasperPrint
+            );
+
+            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
+
+            abrirTela(
+                    "Relatório - Clientes por Loja",
+                    relatorioViewerView
+            );
+
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Erro ao gerar relatório de clientes por loja.",
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void itemClientesPorVendedorActionPerformed(java.awt.event.ActionEvent evt) {
-        mostrarModuloEmDesenvolvimento("Relatório de Clientes por Vendedor");
+         try {
+            JasperPrint jasperPrint = relatorioController.gerarClientesPorVendedor();
+
+            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
+                "Relatório - Clientes por Vendedor",
+                jasperPrint
+            );
+
+            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
+
+            abrirTela(
+                "Relatório - Clientes por Vendedor",
+                relatorioViewerView
+            );
+
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Erro ao gerar relatório de clientes por vendedor.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void itemAtendimentosPorPeriodoActionPerformed(java.awt.event.ActionEvent evt) {
-        mostrarModuloEmDesenvolvimento("Relatório de Atendimentos por Período");
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");    
+
+            String dataInicioTexto = JOptionPane.showInputDialog(
+                this,
+                "Informe a data inicial no formato dd/MM/yyyy:",
+                "Atendimentos por Período",
+                JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (dataInicioTexto == null || dataInicioTexto.trim().isEmpty()) {
+                return;
+            }
+
+            String dataFimTexto = JOptionPane.showInputDialog(
+                this,
+                "Informe a data final no formato dd/MM/yyyy:",
+                "Atendimentos por Período",
+                JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (dataFimTexto == null || dataFimTexto.trim().isEmpty()) {
+                return;
+            }
+
+            LocalDate dataInicio = LocalDate.parse(dataInicioTexto.trim(), formatter);
+            LocalDate dataFim = LocalDate.parse(dataFimTexto.trim(), formatter);
+
+            LocalDateTime dataInicioCompleta = dataInicio.atStartOfDay();
+            LocalDateTime dataFimCompleta = dataFim.atTime(23, 59, 59);
+
+            JasperPrint jasperPrint = relatorioController.gerarAtendimentosPorPeriodo(
+                dataInicioCompleta,
+                dataFimCompleta
+            );
+
+            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
+                "Relatório - Atendimentos por Período",
+                jasperPrint
+            );
+
+            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
+
+            abrirTela(
+                    "Relatório - Atendimentos por Período",
+                    relatorioViewerView
+            );
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Data inválida. Use o formato dd/MM/yyyy.",
+                    "Validação",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Erro ao gerar relatório de atendimentos por período.",
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void itemUsuariosPorLojaActionPerformed(java.awt.event.ActionEvent evt) {
-        mostrarModuloEmDesenvolvimento("Relatório de Usuários por Loja");
+        try {
+            JasperPrint jasperPrint = relatorioController.gerarUsuariosPorLoja();
+
+            RelatorioViewerView relatorioViewerView = new RelatorioViewerView(
+                "Relatório - Usuários por Loja",
+                jasperPrint
+            );
+
+            relatorioViewerView.setOnClose(this::mostrarTelaInicial);
+
+            abrirTela(
+                "Relatório - Usuários por Loja",
+                relatorioViewerView
+            );
+
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Erro ao gerar relatório de usuários por loja.",
+                "Erro",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void itemSairActionPerformed(java.awt.event.ActionEvent evt) {

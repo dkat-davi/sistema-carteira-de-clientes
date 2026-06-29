@@ -1,0 +1,88 @@
+<!-- Created with Jaspersoft Studio version 7.0.6.final using JasperReports Library version 7.0.6-5d2a603fdc6b3db8f842a83383e594f41891534d  -->
+<jasperReport name="usuarios_por_loja" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f9f17994-c908-4625-8e44-d89cc06b4cc0">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="MySQL - Carteira Clientes"/>
+	<query language="SQL"><![CDATA[
+        
+            SELECT
+                l.nome AS loja_nome,
+                u.nome AS usuario_nome,
+                u.login AS usuario_login,
+                u.role AS perfil,
+                ul.cargo AS cargo
+            FROM usuario_loja ul
+            INNER JOIN usuario u ON u.id = ul.usuario_id
+            INNER JOIN loja l ON l.id = ul.loja_id
+            WHERE u.ativo = TRUE
+            AND l.ativo = TRUE
+            ORDER BY l.nome, ul.cargo, u.nome
+        
+    ]]></query>
+	<field name="loja_nome" class="java.lang.String"/>
+	<field name="usuario_nome" class="java.lang.String"/>
+	<field name="usuario_login" class="java.lang.String"/>
+	<field name="perfil" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<title height="70" splitType="Stretch">
+		<element kind="staticText" uuid="b1fbcbfb-73e2-4c91-bf6a-46ce85df2681" x="0" y="5" width="802" height="30" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Relatório de Usuários por Loja]]></text>
+		</element>
+		<element kind="staticText" uuid="5e2899a9-69c0-4ab6-b353-28df8d2e8c99" x="0" y="40" width="802" height="18" fontSize="10.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Sistema Carteira de Clientes]]></text>
+		</element>
+	</title>
+	<pageHeader height="20" splitType="Stretch">
+		<element kind="textField" uuid="7c826324-cd36-4aa6-83e1-34e8858a0416" x="600" y="0" width="202" height="16" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Emitido em: " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></expression>
+		</element>
+	</pageHeader>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="6d478169-9538-470c-b527-f360930a81d8" x="0" y="5" width="220" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Loja]]></text>
+		</element>
+		<element kind="staticText" uuid="51d9b338-d910-4cde-829c-7cbe2d08b9d2" x="220" y="5" width="250" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Usuário]]></text>
+		</element>
+		<element kind="staticText" uuid="607874c1-14eb-4758-955b-40f9da57ce16" x="470" y="5" width="130" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Login]]></text>
+		</element>
+		<element kind="staticText" uuid="d5cc446e-4997-4389-85a2-cbff63ffba5b" x="600" y="5" width="90" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Perfil]]></text>
+		</element>
+		<element kind="staticText" uuid="bdbaae56-5407-4060-8d80-1db7d9b7e408" x="690" y="5" width="112" height="20" fontSize="10.0" bold="true" vTextAlign="Middle">
+			<text><![CDATA[Cargo]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<element kind="textField" uuid="b9baab56-55d9-4d68-a5df-70266f868285" x="0" y="2" width="220" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{loja_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="b253d7d7-7baa-42fb-a096-83f733ae1f1f" x="220" y="2" width="250" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{usuario_nome}]]></expression>
+			</element>
+			<element kind="textField" uuid="755b857c-566b-49d3-944b-7306a6f92d73" x="470" y="2" width="130" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{usuario_login}]]></expression>
+			</element>
+			<element kind="textField" uuid="ab00beea-645a-4bbb-82f7-eb9a9182111f" x="600" y="2" width="90" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{perfil}]]></expression>
+			</element>
+			<element kind="textField" uuid="90e97c4f-a816-4f22-88a1-bda777a9446b" x="690" y="2" width="112" height="18" fontSize="9.0" vTextAlign="Middle">
+				<expression><![CDATA[$F{cargo}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<pageFooter height="30" splitType="Stretch">
+		<element kind="textField" uuid="e3309f90-b51a-4c97-87fa-113fa9c11fc7" x="0" y="5" width="250" height="18" fontSize="9.0">
+			<expression><![CDATA["Sistema Carteira de Clientes"]]></expression>
+		</element>
+		<element kind="textField" uuid="79cd92f9-e9b0-47b9-b4ef-844300f24cb2" x="652" y="5" width="150" height="18" fontSize="9.0" hTextAlign="Right">
+			<expression><![CDATA["Página " + $V{PAGE_NUMBER}]]></expression>
+		</element>
+	</pageFooter>
+	<summary height="30" splitType="Stretch">
+		<element kind="staticText" uuid="f64d141c-b9b0-459f-8124-99ef9d4d5197" x="0" y="5" width="802" height="18" fontSize="9.0" hTextAlign="Center">
+			<text><![CDATA[Fim do relatório]]></text>
+		</element>
+	</summary>
+</jasperReport>
