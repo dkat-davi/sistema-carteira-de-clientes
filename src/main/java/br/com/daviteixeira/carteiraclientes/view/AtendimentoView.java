@@ -14,10 +14,19 @@ public class AtendimentoView extends javax.swing.JFrame {
 
     private final AtendimentoController atendimentoController = new AtendimentoController();
     private final DateTimeFormatter formatadorData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private Runnable onClose;
 
     public AtendimentoView() {
         initComponents();
         configurarTela();
+    }
+
+    public javax.swing.JPanel getPainelPrincipal() {
+        return painelPrincipal;
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
     }
 
     private void configurarTela() {
@@ -233,6 +242,15 @@ public class AtendimentoView extends javax.swing.JFrame {
         txtDescricao.requestFocus();
     }
 
+    private void fecharTela() {
+        if (onClose != null) {
+            onClose.run();
+            return;
+        }
+
+        dispose();
+    }
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -440,7 +458,7 @@ public class AtendimentoView extends javax.swing.JFrame {
     }
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
-        dispose();
+        fecharTela();
     }
 
     private void tabelaAtendimentosMouseClicked(java.awt.event.MouseEvent evt) {

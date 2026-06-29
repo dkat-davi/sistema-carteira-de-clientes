@@ -2,7 +2,9 @@ package br.com.daviteixeira.carteiraclientes.view;
 
 import br.com.daviteixeira.carteiraclientes.model.Usuario;
 import br.com.daviteixeira.carteiraclientes.util.SessaoUsuario;
+import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class TelaPrincipalView extends javax.swing.JFrame {
 
@@ -12,6 +14,7 @@ public class TelaPrincipalView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         configurarUsuarioLogado();
         configurarPermissoes();
+        mostrarTelaInicial();
     }
 
     private void configurarUsuarioLogado() {
@@ -43,6 +46,24 @@ public class TelaPrincipalView extends javax.swing.JFrame {
                 "Em desenvolvimento",
                 JOptionPane.INFORMATION_MESSAGE
         );
+    }
+
+    private void mostrarTelaInicial() {
+        setTitle("Sistema Carteira de Clientes");
+        painelPrincipal.removeAll();
+        painelPrincipal.setLayout(new BorderLayout());
+        painelPrincipal.add(lblBoasVindas, BorderLayout.CENTER);
+        painelPrincipal.revalidate();
+        painelPrincipal.repaint();
+    }
+
+    private void abrirTela(String titulo, JPanel tela) {
+        setTitle("Sistema Carteira de Clientes - " + titulo);
+        painelPrincipal.removeAll();
+        painelPrincipal.setLayout(new BorderLayout());
+        painelPrincipal.add(tela, BorderLayout.CENTER);
+        painelPrincipal.revalidate();
+        painelPrincipal.repaint();
     }
 
     private void sairDoSistema() {
@@ -224,27 +245,32 @@ public class TelaPrincipalView extends javax.swing.JFrame {
 
     private void itemClientesActionPerformed(java.awt.event.ActionEvent evt) {
         ClienteView clienteView = new ClienteView();
-        clienteView.setVisible(true);
+        clienteView.setOnClose(this::mostrarTelaInicial);
+        abrirTela("Cadastro de Clientes", clienteView.getPainelPrincipal());
     }
 
     private void itemUsuariosActionPerformed(java.awt.event.ActionEvent evt) {
-         UsuarioView usuarioView = new UsuarioView();
-        usuarioView.setVisible(true);
+        UsuarioView usuarioView = new UsuarioView();
+        usuarioView.setOnClose(this::mostrarTelaInicial);
+        abrirTela("Cadastro de Usuarios", usuarioView.getPainelPrincipal());
     }
 
     private void itemLojasActionPerformed(java.awt.event.ActionEvent evt) {
         LojaView lojaView = new LojaView();
-        lojaView.setVisible(true);
+        lojaView.setOnClose(this::mostrarTelaInicial);
+        abrirTela("Cadastro de Lojas", lojaView.getPainelPrincipal());
     }
 
     private void itemUsuarioLojaActionPerformed(java.awt.event.ActionEvent evt) {
         UsuarioLojaView usuarioLojaView = new UsuarioLojaView();
-        usuarioLojaView.setVisible(true);
+        usuarioLojaView.setOnClose(this::mostrarTelaInicial);
+        abrirTela("Vinculo Usuario x Loja", usuarioLojaView.getPainelPrincipal());
     }
 
     private void itemRegistrarAtendimentoActionPerformed(java.awt.event.ActionEvent evt) {
         AtendimentoView atendimentoView = new AtendimentoView();
-        atendimentoView.setVisible(true);
+        atendimentoView.setOnClose(this::mostrarTelaInicial);
+        abrirTela("Registro de Atendimentos", atendimentoView.getPainelPrincipal());
     }
 
     private void itemClientesPorLojaActionPerformed(java.awt.event.ActionEvent evt) {

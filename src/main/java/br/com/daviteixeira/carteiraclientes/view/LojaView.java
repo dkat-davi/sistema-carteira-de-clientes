@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 public class LojaView extends javax.swing.JFrame {
 
     private final LojaController lojaController;
+    private Runnable onClose;
 
     public LojaView() {
         this.lojaController = new LojaController();
@@ -19,6 +20,14 @@ public class LojaView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         txtId.setEditable(false);
         carregarTabela();
+    }
+
+    public javax.swing.JPanel getPainelPrincipal() {
+        return painelPrincipal;
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
     }
 
     private void salvarLoja() {
@@ -186,6 +195,15 @@ public class LojaView extends javax.swing.JFrame {
 
         tabelaLojas.clearSelection();
         txtNome.requestFocus();
+    }
+
+    private void fecharTela() {
+        if (onClose != null) {
+            onClose.run();
+            return;
+        }
+
+        dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -419,7 +437,7 @@ public class LojaView extends javax.swing.JFrame {
     }
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
-        dispose();
+        fecharTela();
     }
 
     private void tabelaLojasMouseClicked(java.awt.event.MouseEvent evt) {

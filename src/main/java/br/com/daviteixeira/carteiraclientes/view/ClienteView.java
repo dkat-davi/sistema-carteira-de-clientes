@@ -16,10 +16,19 @@ public class ClienteView extends javax.swing.JFrame {
 
     private final ClienteController clienteController = new ClienteController();
     private final DateTimeFormatter formatadorData = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private Runnable onClose;
 
     public ClienteView() {
         initComponents();
         configurarTela();
+    }
+
+    public javax.swing.JPanel getPainelPrincipal() {
+        return painelPrincipal;
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
     }
 
     private void configurarTela() {
@@ -293,6 +302,15 @@ public class ClienteView extends javax.swing.JFrame {
         txtNome.requestFocus();
     }
 
+    private void fecharTela() {
+        if (onClose != null) {
+            onClose.run();
+            return;
+        }
+
+        dispose();
+    }
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -551,7 +569,7 @@ public class ClienteView extends javax.swing.JFrame {
     }
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
-        dispose();
+        fecharTela();
     }
 
     private void tabelaClientesMouseClicked(java.awt.event.MouseEvent evt) {

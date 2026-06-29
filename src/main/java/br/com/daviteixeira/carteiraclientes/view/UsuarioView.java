@@ -10,10 +10,19 @@ import javax.swing.table.DefaultTableModel;
 public class UsuarioView extends javax.swing.JFrame {
 
     private final UsuarioController usuarioController = new UsuarioController();
+    private Runnable onClose;
 
     public UsuarioView() {
         initComponents();
         configurarTela();
+    }
+
+    public javax.swing.JPanel getPainelPrincipal() {
+        return painelPrincipal;
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
     }
 
     private void configurarTela() {
@@ -188,6 +197,15 @@ public class UsuarioView extends javax.swing.JFrame {
 
         tabelaUsuarios.clearSelection();
         txtNome.requestFocus();
+    }
+
+    private void fecharTela() {
+        if (onClose != null) {
+            onClose.run();
+            return;
+        }
+
+        dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -425,7 +443,7 @@ public class UsuarioView extends javax.swing.JFrame {
     }
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
-        dispose();
+        fecharTela();
     }
 
     private void tabelaUsuariosMouseClicked(java.awt.event.MouseEvent evt) {

@@ -13,10 +13,19 @@ import javax.swing.table.DefaultTableModel;
 public class UsuarioLojaView extends javax.swing.JFrame {
 
     private final UsuarioLojaController usuarioLojaController = new UsuarioLojaController();
+    private Runnable onClose;
 
     public UsuarioLojaView() {
         initComponents();
         configurarTela();
+    }
+
+    public javax.swing.JPanel getPainelPrincipal() {
+        return painelPrincipal;
+    }
+
+    public void setOnClose(Runnable onClose) {
+        this.onClose = onClose;
     }
 
     private void configurarTela() {
@@ -252,6 +261,15 @@ public class UsuarioLojaView extends javax.swing.JFrame {
         tabelaVinculos.clearSelection();
     }
 
+    private void fecharTela() {
+        if (onClose != null) {
+            onClose.run();
+            return;
+        }
+
+        dispose();
+    }
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -467,7 +485,7 @@ public class UsuarioLojaView extends javax.swing.JFrame {
     }
 
     private void btnFecharActionPerformed(java.awt.event.ActionEvent evt) {
-        dispose();
+        fecharTela();
     }
 
     private void tabelaVinculosMouseClicked(java.awt.event.MouseEvent evt) {
